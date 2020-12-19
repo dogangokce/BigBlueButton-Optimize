@@ -6,7 +6,7 @@ Bu değişiklikleri yaptıktan sonra BigBlueButton sunucunuzu yeniden başlatmay
 bbb-conf --restart
 ``` 
 
-## Manage customizations
+## Özelleştirmeleri yönetin
 
 BigBlueButton sunucusunun tüm özelleştirmelerini apply-config.sh içinde tutun, böylece (1) tüm BBB sunucularınız aynı özelleştirmelere hatasız bir şekilde sahip olur ve (2) yükseltme sırasında bunları kaybetmezsiniz.
 
