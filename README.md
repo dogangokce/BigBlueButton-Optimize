@@ -1,111 +1,109 @@
 # bbb-optimize
-Here are techniques to optimize and smoothly run your BigBlueButton server, including increasing recording processing speed, dynamic video profile, pagination, improving audio quality, fixing 1007/1020 errors and using apply-config.sh. 
+BigBlueButton sunucunuzu optimize etmek ve sorunsuz bir şekilde çalıştırmak için, kayıt işleme hızını artırma, dinamik video profili, sayfalandırma, ses kalitesini iyileştirme, 1007/1020 hatalarını düzeltme ve apply-config.sh kullanma gibi teknikleri burada bulabilirsiniz.
 
-Don't forget to restart your BigBlueButton server after making these changes
+Bu değişiklikleri yaptıktan sonra BigBlueButton sunucunuzu yeniden başlatmayı unutmayın.
 ```sh
 bbb-conf --restart
 ``` 
 
 ## Manage customizations
 
-Keep all customizations of BigBlueButton server in apply-config.sh so that (1) all your BBB servers have same customizations without any errors, and (2) you don't lose them while upgrading.
+BigBlueButton sunucusunun tüm özelleştirmelerini apply-config.sh içinde tutun, böylece (1) tüm BBB sunucularınız aynı özelleştirmelere hatasız bir şekilde sahip olur ve (2) yükseltme sırasında bunları kaybetmezsiniz.
 
-We use XMLStarlet to update xml files and sed to update text files. 
+Xml dosyalarını güncellemek için XMLStarlet ve metin dosyalarını güncellemek için sed kullanıyoruz.
 
 ```sh
 sudo apt-get update -y
 sudo apt-get install -y xmlstarlet
-git clone https://github.com/manishkatyan/bbb-optimize.git
+git clone https://github.com/dogangokce/BigBlueButton-Optimize.git
 cd bbb-optimize
 cp apply-config-sample.sh apply-config.sh
 
-# Edit apply-config.sh to set PUBLIC_IP to the public IP of your BBB server
+# PUBLIC_IP'yi BBB sunucunuzun genel IP'sine ayarlamak için apply-config.sh dosyasını düzenleyin
 
-# Apply changes and restart BBB
+# Değişiklikleri uygulayın ve BBB'yi yeniden başlatın
 ./replace-config.sh
 ```
-Edit `apply-config.sh` as appropriate. Comments with each of the customizations will help you understand that the implication of each of them and you will be able to change the default values.  
-
-## Match with your branding
+'apply-config.sh' dosyasını uygun şekilde düzenleyin. Her bir özelleştirmeyle ilgili yorumlar, her birinin anlamını anlamanıza yardımcı olacak ve varsayılan değerleri değiştirebileceksiniz.
+## Markanızla eşleştirin
 ```sh
 cp default.pdf /var/www/bigbluebutton-default/
 cp favicon.ico /var/www/bigbluebutton-default/
 bbb-conf --restart
 ```
-You can update default BigBlueButton setup to match with your branding in the following ways:
-1. Default PDF that would appear in the presentation area
-2. Logo (favicon format) that would appear as favicon
-3. Application name that would appear in "About" - right side menu
-4. Welcome message that would appear on the public chat area
-5. index.html that shows up when a user logs-out of a class. Create your own version and put it in `/var/www/bigbluebutton-default/`
+Varsayılan BigBlueButton kurulumunu markanızla eşleşecek şekilde aşağıdaki şekillerde güncelleyebilirsiniz:
+1. Sunum alanında görünecek varsayılan PDF
+2. Site simgesi olarak görünecek logo (favicon biçimi)
+3. "Hakkında" bölümünde görünen uygulama adı - sağ taraftaki menü
+4. Genel sohbet alanında görünecek hoş geldiniz mesajı
+5. Bir kullanıcı bir sınıftan çıkış yaptığında görünen index.html. Kendi sürümünüzü oluşturun ve `/ var / www / bigbluebutton-default / '' içine koyun.
 
-In addition, you can change the following items in apply-config.sh:
+Ek olarak, apply-config.sh içinde aşağıdaki öğeleri değiştirebilirsiniz:
 1. clientTitle
 2. appName
 3. copyright
 4. helpLink
-
-## Change recording processing speed
+## Kayıt işleme hızını değiştir
 ```sh
 vi /usr/local/bigbluebutton/core/lib/recordandplayback/generators/video.rb
 ```
-Make the following changes on line 58 and line 124 to speed up recording processing time by 5-6 times:
+Kayıt işlem süresini 5-6 kat hızlandırmak için satır 58 ve satır 124'te aşağıdaki değişiklikleri yapın:
 `-quality realtime -speed 5 -tile-columns 2 -threads 4`
 
-[Reference](https://github.com/bigbluebutton/bigbluebutton/issues/8770)
+[Referans](https://github.com/bigbluebutton/bigbluebutton/issues/8770)
 
-Please keep in mind that it uses a more CPU which can affect the performance of live on-going classes on BigBlueButton.
+Lütfen BigBlueButton'da canlı devam eden sınıfların performansını etkileyebilecek daha fazla CPU kullandığını unutmayın.
 
-Hence, its better to change the schedule of processing internal for recordings along with this change. 
+Bu nedenle, bu değişiklikle birlikte kayıtlar için dahili işleme programını değiştirmek daha iyidir. 
 
-## Use MP4 format for playback of recordings
-The presentation playback format encodes the video shared during the session (webcam and screen share) as .webm (VP8) files.
+## Kayıtları oynatmak için MP4 formatını kullanın
+Sunum oynatma formatı, oturum sırasında paylaşılan videoyu (web kamerası ve ekran paylaşımı) .webm (VP8) dosyaları olarak kodlar.
 
-You can change the format to MP4 for two reasons: (1) increase recording processing speed, and (2) enable playback of recordings on iOS devices.
+Biçimi iki nedenle MP4 olarak değiştirebilirsiniz: (1) kayıt işleme hızını artırın ve (2) iOS cihazlarda kayıtların oynatılmasını etkinleştirin.
 
-Edit `/usr/local/bigbluebutton/core/scripts/presentation.yml` and uncomment the entry for mp4.
+`/usr/local/bigbluebutton/core/scripts/presentation.yml` düzenleyin ve mp4 için girişi kaldırın.
 video_formats:
 ```sh 
 #- webm
 - mp4
 ```
 
-## Dynamic Video Profile
+## Dinamik Video Profili
 
-aka automatic bitrate/frame rate throttling.   To control camera framerate and bitrate that scales according to the number of cameras in a meeting.
-To decrease server AND client CPU/bandwidth usage for meetings with many cameras. Leads to significant difference in responsiveness, CPU usage and bandwidth usage (for the better) with this PR.
+aka otomatik bit hızı / kare hızı azaltma. Bir toplantıdaki kamera sayısına göre ölçeklenen kamera kare hızını ve bit hızını kontrol etmek için.
+Birçok kameralı toplantılarda sunucu VE istemci CPU / bant genişliği kullanımını azaltmak için. Bu PR ile yanıt verme, CPU kullanımı ve bant genişliği kullanımında (daha iyisi için) önemli farklara yol açar.
 
-Edit `/usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml` and set
+`/usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml` ayarlayın
 ```sh
 cameraQualityThresholds:
       enabled: true
 ```
 
-## Video Pagination
+## Video Sayfalandırma
 
-You can control the number of webcams visible to meeting participants at a single time. 
+Tek seferde toplantı katılımcılarının görebileceği web kamerası sayısını kontrol edebilirsiniz.
 
-Edit `/usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml` and set
+ `/usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml` ayarlayın
 ```sh
 pagination:
   enabled: true
 ```
 
-## Stream better quality audio
-Edit `/usr/local/bigbluebutton/bbb-webrtc-sfu/config/default.yml` and make the following changes
+## Daha iyi ses kalitesi yayınlayın
+`/usr/local/bigbluebutton/bbb-webrtc-sfu/config/default.yml` ve aşağıdaki değişiklikleri yapın
 ```sh
 maxaveragebitrate: "256000"
 maxplaybackrate: "48000"
 ```
 
-Edit `/opt/freeswitch/etc/freeswitch/autoload_configs/conference.conf.xml` and make the follwoing changes
+`/opt/freeswitch/etc/freeswitch/autoload_configs/conference.conf.xml` ve aşağıdaki değişiklikleri yapın
 ```sh
 <param name="interval" value="20"/>
 <param name="channels" value="2"/>
 <param name="energy-level" value="100"/>
 ```
 
-Edit `/opt/freeswitch/etc/freeswitch/dialplan/default/bbb_conference.xml` and copy-and-paste the code below, removing the existig code
+`/opt/freeswitch/etc/freeswitch/dialplan/default/bbb_conference.xml` mevcut kodu kaldırarak aşağıdaki kodu kopyalayıp yapıştırın
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <include>
@@ -134,8 +132,7 @@ Edit `/opt/freeswitch/etc/freeswitch/dialplan/default/bbb_conference.xml` and co
    </extension>
 </include>
 ```
-
-Edit `/opt/freeswitch/etc/freeswitch/autoload_configs/opus.conf.xml` and copy-and-paste the code below, removing the existig code
+`/opt/freeswitch/etc/freeswitch/autoload_configs/opus.conf.xml` mevcut kodu kaldırarak aşağıdaki kodu kopyalayıp yapıştırın
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -158,78 +155,76 @@ Edit `/opt/freeswitch/etc/freeswitch/autoload_configs/opus.conf.xml` and copy-an
 </configuration>
 ```
 
-[Reference](https://groups.google.com/g/bigbluebutton-setup/c/3Y7VBllwpX0/m/41X9j8bvCAAJ)
+[Referans](https://groups.google.com/g/bigbluebutton-setup/c/3Y7VBllwpX0/m/41X9j8bvCAAJ)
 
-## Run three parallel Kurento media servers
+## Üç paralel Kurento medya sunucusu çalıştırın
 
-Available in BigBluebutton 2.2.24 (and later releases of 2.2.x)
+BigBluebutton 2.2.24'te (ve 2.2.x'in sonraki sürümlerinde) mevcuttur
 
-Running three parallel Kurento media servers (KMS) – one dedicated to each type of media stream – increases the stability of media handling as the load for starting/stopping media streams spreads over three separate KMS processes. Also, it increases the reliability of media handling as a crash (and automatic restart) by one KMS will not affect the two.
+Her tür medya akışına ayrılmış üç paralel Kurento medya sunucusu (KMS) çalıştırmak, medya akışlarını başlatma / durdurma yükü üç ayrı KMS işlemine yayılırken medya işlemenin kararlılığını artırır. Ayrıca, bir KMS'nin çökmesi (ve otomatik yeniden başlatma) nedeniyle ortam işlemenin güvenilirliğini artırır, ikisini etkilemez.
 
-In our experience, we have see CPU usage spread across 3 KMS servers, resulting in better user experience. Hence, we highly recommend it. 
+Deneyimlerimize göre, CPU kullanımının 3 KMS sunucusuna yayıldığını ve bunun daha iyi bir kullanıcı deneyimi sağladığını gördük. Bu nedenle, kesinlikle tavsiye ediyoruz.
 
-The change required to enable 3 KMS is part of our apply-config-sample.sh included with this project.
+3 KMS'yi etkinleştirmek için gereken değişiklik, bu projeye dahil edilen apply-config-sample.sh dosyamızın bir parçasıdır.
 
-## Optimize Recording
+## Kaydı Optimize Edin
 
-### Process multiple recordings
+### Birden çok kaydı işleyin
 
-Make changes described in this PR: [Add option to rap-process-worker to accept a filtering pattern](https://github.com/bigbluebutton/bigbluebutton/pull/8394)
+Bu PK'da açıklanan değişiklikleri yapın: [Add option to rap-process-worker to accept a filtering pattern](https://github.com/bigbluebutton/bigbluebutton/pull/8394)
 
 ```sh
-Edit /usr/lib/systemd/system/bbb-rap-process-worker.service and set the command to: ExecStart=/usr/local/bigbluebutton/core/scripts/rap-process-worker.rb -p "[0-4]$"
-Copy /usr/lib/systemd/system/bbb-rap-process-worker.service to /usr/lib/systemd/system/bbb-rap-process-worker-2.service
-Edit /usr/lib/systemd/system/bbb-rap-process-worker-2.service and set the command to ExecStart=/usr/local/bigbluebutton/core/scripts/rap-process-worker.rb -p "[5-9]$"
-Edit /usr/lib/systemd/system/bbb-record-core.target and add bbb-rap-process-worker-2.service to the list of services in Wants
-Edit /usr/bin/bbb-record, search for bbb-rap-process-worker.service and add bbb-rap-process-worker-2.service next to it to monitor
+Düzenle /usr/lib/systemd/system/bbb-rap-process-worker.service and set the command to: ExecStart=/usr/local/bigbluebutton/core/scripts/rap-process-worker.rb -p "[0-4]$"
+Koplaya /usr/lib/systemd/system/bbb-rap-process-worker.service to /usr/lib/systemd/system/bbb-rap-process-worker-2.service
+Düzenle /usr/lib/systemd/system/bbb-rap-process-worker-2.service and set the command to ExecStart=/usr/local/bigbluebutton/core/scripts/rap-process-worker.rb -p "[5-9]$"
+Düzenle /usr/lib/systemd/system/bbb-record-core.target and add bbb-rap-process-worker-2.service to the list of services in Wants
+Düzenle /usr/bin/bbb-record, search for bbb-rap-process-worker.service and add bbb-rap-process-worker-2.service next to it to monitor
 ```
 
-You will also need to copy the updated version of `rap-process-worker.rb` from [here](https://github.com/daronco/bigbluebutton/blob/9e5c386e6f89303c3f15f4552a8302d2e278d057/record-and-playback/core/scripts/rap-process-worker.rb) to the following location `/usr/local/bigbluebutton/core/scripts`
+Ayrıca, uygulamasının güncellenmiş sürümünü `rap-process-worker.rb` için  [buraya](https://github.com/daronco/bigbluebutton/blob/9e5c386e6f89303c3f15f4552a8302d2e278d057/record-and-playback/core/scripts/rap-process-worker.rb) aşağıdaki konuma `/usr/local/bigbluebutton/core/scripts`
 
-Ensure the right file permission `chmod +x rap-process-worker.rb`
+Doğru dosya iznini sağlayın `chmod +x rap-process-worker.rb`
 
-After making the changes above restart recording process:
+Yukarıdaki değişiklikleri yaptıktan sonra kayıt işlemini yeniden başlatın:
 ```sh
 systemctl daemon-reload 	
 systemctl stop bbb-rap-process-worker.service bbb-record-core.timer 	
 systemctl start bbb-record-core.timer
 ```
 
-To verify that the above changes have taken in place, execute the following:
+Yukarıdaki değişikliklerin uygulandığını doğrulamak için aşağıdakileri uygulayın:
 ```sh
 ps aux | grep rap-process-worker
 ```
 
-You should see the following two processes:
+Aşağıdaki iki işlemi görmelisiniz:
 ```sh
 /usr/bin/ruby /usr/local/bigbluebutton/core/scripts/rap-process-worker.rb -p [5-9]$
 /usr/bin/ruby /usr/local/bigbluebutton/core/scripts/rap-process-worker.rb -p [0-4]$
 ```
-In case you don't see above two processes running, it's likely that you don't have any recording to process. You may want to record a test class using API-MATE and check if the above two processes start running after the end of the test class.
+Yukarıdaki iki işlemin çalıştığını görmüyorsanız, büyük olasılıkla işlenecek herhangi bir kaydınız yoktur. API-MATE kullanarak bir test sınıfı kaydetmek ve test sınıfının bitiminden sonra yukarıdaki iki işlemin çalışmaya başlayıp başlamadığını kontrol etmek isteyebilirsiniz.
 
-### Import already published recordings from one scalelite to another
+### Yayınlanmış kayıtları bir scalelite'den diğerine aktarın
 
-To migrate existing, already published recordings, from one Scalelite server to another Scalelite server, follow the steps below:
+Mevcut, önceden yayınlanmış kayıtları bir Scalelite sunucusundan başka bir Scalelite sunucusuna taşımak için aşağıdaki adımları izleyin:
+* formda bir yol ile eski klasörden bir tar dosyası oluşturun `presentation/<recording-id>/...`
+* Bu tar dosyasını panoya kopyalayın: `/mnt/scalelite-recordings/var/bigbluebutton/spool/` Yeni scalelite sunucusunda
+* Kısa bir süre sonra (birkaç dakika) kayıt otomatik olarak yayınlanan klasöre aktarılır. `scalelite-recording-importer` Docker servisi
 
-* make a tar file from the old folder with a path in the form `presentation/<recording-id>/...`
-* copy this tar file to `/mnt/scalelite-recordings/var/bigbluebutton/spool/` on the New scalelite server
-* After a short while (a few minutes) the recording is automatically imported to the published folder by `scalelite-recording-importer` Docker service
+### Sorun giderme
 
-### Troubleshooting
+Belirli bir kaydın işlenmesini araştırmak için günlük dosyalarına bakabilirsiniz.
 
-To investigate the processing of a particular recording, you can look at the log files.
-
-The `/var/log/bigbluebutton/bbb-rap-worker` log is a general log file that can be used to find which section of the recording processing is failing. It also logs a message if a recording process is skipped because the moderator did not push the record button.
-
-To investigate an error for a particular recording, check the following log files:
+`/var/log/bigbluebutton/bbb-rap-worker` günlüğü, kayıt işleminin hangi bölümünün başarısız olduğunu bulmak için kullanılabilen genel bir günlük dosyasıdır. Ayrıca, moderatör kayıt düğmesine basmadığı için bir kayıt işlemi atlanırsa bir mesaj kaydeder.
+Belirli bir kayıtla ilgili bir hatayı araştırmak için aşağıdaki günlük dosyalarını kontrol edin:
 ```sh
 /var/log/bigbluebutton/archive-<recordingid>.log
 /var/log/bigbluebutton/<workflow>/process-<recordingid>.log
 /var/log/bigbluebutton/<workflow>/publish-<recordingid>.log
 ```
 
-#### Check Free Disk Space
-One common issue with recording is that your server is running out of free disk space. Here is how to check for disk space usage:
+#### Boş Disk Alanını Kontrol Edin
+Kayıtla ilgili yaygın bir sorun, sunucunuzun boş disk alanının tükenmesidir. Disk alanı kullanımını şu şekilde kontrol edebilirsiniz:
 
 ```sh
 apt install ncdu
@@ -238,14 +233,14 @@ cd /var/bigbluebutton/published/presentation/
 ncdu
 ``` 
 
-You should also check disk space used by log files in `/var/log/bigbluebutton` and `/opt/freeswitch/log`. 
+Günlük dosyalarının kullandığı disk alanını da kontrol etmelisiniz. `/var/log/bigbluebutton` ve `/opt/freeswitch/log`. 
 
-## Fix 1007 and 1020 errors
+## 1007 ve 1020 hatalarını düzeltin
 
-Follow the steps below to resolve 1007/1020 errors that your users may resport in case they are behind a firewall.
+Kullanıcılarınızın bir güvenlik duvarı arkasında olmaları durumunda bildirebilecekleri 1007/1020 hatalarını çözmek için aşağıdaki adımları izleyin.
 
-#### 1. Update `external.xml` and `vars.xml`
-Edit `/opt/freeswitch/etc/freeswitch/sip_profiles/external.xml` and change
+#### 1. Güncelle `external.xml` ve `vars.xml`
+`/opt/freeswitch/etc/freeswitch/sip_profiles/external.xml` ve değiştir
 ```xml
 <param name="ext-rtp-ip" value="$${local_ip_v4}"/>
 <param name="ext-sip-ip" value="$${local_ip_v4}"/>
@@ -256,7 +251,7 @@ To
 <param name="ext-sip-ip" value="$${external_sip_ip}"/>
 ```
 
-Edit `/opt/freeswitch/etc/freeswitch/vars.xml`, and change
+`/opt/freeswitch/etc/freeswitch/vars.xml`, ve değiştir
 ```xml
 <X-PRE-PROCESS cmd="set" data="external_rtp_ip=stun:stun.freeswitch.org"/>
 <X-PRE-PROCESS cmd="set" data="external_sip_ip=stun:stun.freeswitch.org"/>
@@ -267,16 +262,16 @@ To 
 <X-PRE-PROCESS cmd="set" data="external_sip_ip=EXTERNAL_IP_ADDRESS"/>
 ```
 
-#### 2. Verify Turn server is accessible 
-Verify Turn server is accessible from your BBB serve. If you receive code 0x0001c means STUN is not working. Log into your BBB server and execute the following command: 
+#### 2. Turn sunucusunun erişilebilir olduğunu doğrulayın
+Turn sunucusuna BBB sunucunuzdan erişilebildiğini doğrulayın. 0x0001c kodunu alırsanız, STUN çalışmıyor demektir. BBB sunucunuzda oturum açın ve aşağıdaki komutu yürütün: 
 
 ```sh
 sudo apt install stun-client
 stun <your-turn-server>
 ```
-Here is another way to test whether a Stun server, we are using Google’s public Stun server (stun.l.google.com:19302), is accessible from your BBB server. 
+İşte bir Stun sunucusunun, Google'ın genel Stun sunucusuna (stun.l.google.com:19302) BBB sunucunuzdan erişilip erişilemediğini test etmenin başka bir yolu.
 
-Localport could be any available UDP port on your BBB server.
+Localport, BBB sunucunuzdaki herhangi bir kullanılabilir UDP bağlantı noktası olabilir.
 
 ```sh
 sudo apt-get install -y stuntman-client 
@@ -284,7 +279,7 @@ sudo apt-get install -y stuntman-client 
 stunclient --mode full --localport 30000 <your-turn-server> <your-turn-server-port>
 
 ```
-Your output should be something like the following:
+Çıktınız aşağıdaki gibi olmalıdır:
 
 ```sh
 Binding test: success
@@ -296,26 +291,26 @@ Filtering test: success
 Nat filtering: Endpoint Independent Filtering
 ```
 
-Configure BigBlueButton to use the coturn server by following the instruction [here](https://docs.bigbluebutton.org/2.2/setup-turn-server.html#configure-bigbluebutton-to-use-the-coturn-server)
+Talimatı izleyerek BigBlueButton'ı coturn sunucusunu kullanacak şekilde yapılandırın [burada](https://docs.bigbluebutton.org/2.2/setup-turn-server.html#configure-bigbluebutton-to-use-the-coturn-server)
 
-#### 3. Install Turn (Coturn) server:
+#### 3. Turn (Coturn) sunucusunu kurun:
 
-Follow the instructions [here](https://docs.bigbluebutton.org/2.2/setup-turn-server.html) to install Turn server and configure `/etc/turnserver.conf` as mentioned below.
+Turn sunucusunu kurmak ve yapılandırmak için [Buradaki](https://docs.bigbluebutton.org/2.2/setup-turn-server.html) talimatları izleyin. `/etc/turnserver.conf` denildği gibi.
 
 ```sh
-listening-port=80 # Some users may not be able to connect to any ports except 80 and 443 because of firewalls.
+listening-port=80 # Bazı kullanıcılar, güvenlik duvarları nedeniyle 80 ve 443 dışındaki herhangi bir bağlantı noktasına bağlanamayabilir.
 tls-listening-port=443
 alt-listening-port=3478
 alt-tls-listening-port=5349
 realm=FQDN of Turn server
 listening-ip=0.0.0.0
 external-ip=Public-IP-of-Turn-server
-# Log to syslog by editing `/etc/turnserver.conf`. Reference - https://github.com/bigbluebutton/bbb-install/issues/163
-syslog
+# `/etc/turnserver.conf`. düzenleyerek syslog'a giriş yapın. Referans - https://github.com/bigbluebutton/bbb-install/issues/163
+sistem günlüğü
 ```
 
 
-We use ports 80 and 443 for Coturn server. Since the Coturn server does not run with root authorizations by default , it must not bind its services to privileged ports (port range <1024). Hence, edit the file `/lib/systemd/system/coturn.service` by executing `systemctl edit --full coturn` and add the following in `[Service]` section
+Coturn sunucusu için 80 ve 443 portlarını kullanıyoruz. Coturn sunucusu varsayılan olarak kök yetkilendirmelerle çalışmadığından, hizmetlerini ayrıcalıklı bağlantı noktalarına (bağlantı noktası aralığı <1024) bağlamamalıdır. Bu nedenle, dosyayı düzenleyin `/lib/systemd/system/coturn.service` yürüterek `systemctl edit --full coturn` ve aşağıdakileri `[Service]`Bölümüne ekleyn
 
 ```sh
 AmbientCapabilities=CAP_NET_BIND_SERVICE
@@ -323,57 +318,57 @@ AmbientCapabilities=CAP_NET_BIND_SERVICE
 # In case file /lib/systemd/system/coturn.service doesn’t exist, follow the tip here: https://stackoverflow.com/questions/47189606/configuration-coturn-on-ubuntu-not-working
 ```
 
-Change ownership of certificates
+Sertifikaların sahipliğini değiştir
 
 ```sh
-# Change turn.higheredlab.com to FQDN of your coturn server
+# Turn.higheredlab.com'u coturn sunucunuzun FQDN'sine değiştirin
 chown -hR turnserver:turnserver /etc/letsencrypt/archive/turn.higheredlab.com/
 chown -hR turnserver:turnserver /etc/letsencrypt/live/turn.higheredlab.com/
 ```
 
-Ensure that `ufw` firewall on your Turn server allows the following ports: 80, 443, 3478, 5439, and 49152:65535/udp
+Turn sunucunuzdaki `ufw` güvenlik duvarının şu bağlantı noktalarına izin verdiğinden emin olun: 80, 443, 3478, 5439 ve 49152: 65535 / udp
 
-To make coturn automatically restart at reboot: `systemctl enable coturn`
+Yeniden başlatma sırasında coturn'u otomatik olarak yeniden başlatmak için: `systemctl enable coturn`
 
-To start coturn server: `systemctl start coturn`
+Coturn sunucusunu başlatmak için: `systemctl start coturn`
 
-To check the status of coturn server: `systemctl start coturn`
+Coturn sunucusunun durumunu kontrol etmek için: `systemctl start coturn`
 
-To view logs in real-time: `journalctl -u coturn -f` 
+Günlükleri gerçek zamanlı olarak görüntülemek için: `journalctl -u coturn -f` 
 
-You can force using the TURN on Firefox browser. Open a Firefox tab and type `about:config`. Search for `media.peerconnection.ice.relay_only`. Set it to true. At this moment Firefox only use TURN relay. Now join a BigBlueButton session for this Firefox browser to see Turn server in action. 
+Firefox tarayıcısında TURN'u kullanmaya zorlayabilirsiniz. Bir Firefox sekmesi açın ve "about: config" yazın. 'media.peerconnection.ice.relay_only' araması yapın. Doğru olarak ayarlayın. Bu noktada Firefox yalnızca TURN geçişini kullanır. Şimdi, Turn server'ı çalışırken görmek için bu Firefox tarayıcısı için bir BigBlueButton oturumuna katılın.
 
-Using Chrome to test: Type `chrome://webrtc-internals` in a Chrome browser. Reference: `https://testrtc.com/find-webrtc-active-connection/`
+Test etmek için Chrome'u kullanma: Yazma `chrome://webrtc-internals` bir Chrome tarayıcısında. Referans: `https://testrtc.com/find-webrtc-active-connection/`
 
-For testing purpose, you can manually start coturn server as follows: `turnserver -c /etc/turnserver.conf`
+Test amacıyla, coturn sunucusunu aşağıdaki şekilde manuel olarak başlatabilirsiniz: `turnserver -c /etc/turnserver.conf`
 
-#### 4. Set external IP in WebRtcEndpoint.conf.ini 
-Edit `/etc/kurento/modules/kurento/WebRtcEndpoint.conf.ini`
+#### 4. WebRtcEndpoint.conf.ini'de harici IP ayarlayın
+ `/etc/kurento/modules/kurento/WebRtcEndpoint.conf.ini` düzenle
 
-Mention external or public IP address of the media server by uncommenting the line below. Doing so has the advantage of not needing to configure STUN/TURN for the media server.
+Aşağıdaki satırın açıklamasını kaldırarak ortam sunucusunun harici veya genel IP adresinden bahsedin. Bunu yapmak, medya sunucusu için STUN / TURN'u yapılandırmaya gerek kalmaması avantajına sahiptir.
 ```sh
 externalIPv4=Public-IP-of-BBB-Server
 ```
 
-STUN/TURN are needed only when the media server sits behind a NAT and needs to find out its own external IP address. However, if you set a static external IP address as mentioned above, then there is no need for the STUN/TURN auto-discovery. Hence, comment the following: using turn.higheredlab.com (IP address)
+STUN / TURN, yalnızca medya sunucusu bir NAT arkasında oturduğunda ve kendi harici IP adresini bulması gerektiğinde gereklidir. Bununla birlikte, yukarıda belirtildiği gibi statik bir harici IP adresi ayarlarsanız, STUN / TURN otomatik keşfine gerek yoktur. Bu nedenle, aşağıdakileri yorumlayın: turn.higheredlab.com'u (IP adresi) kullanarak
 ```sh
 #stunServerAddress=95.217.128.91
 #stunServerPort=3478
 ```
 
-#### 5. Verify your media negotiation timeouts. 
-Recommend setting is to set `baseTimeout` to `60000` in `/usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml`
+#### 5. Medya görüşme zaman aşımlarınızı doğrulayın.
+Önerilen ayara ayarlayın `baseTimeout` to `60000` in `/usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml`
 
 
 #### 6. Verify Turn is working
-Visit `https://webrtc.github.io/samples/src/content/peerconnection/trickle-ice/` to check whether your Turn sevrer is working and enter the details below. Change Turn server URL to your Turn server URL.  
+Bakın `https://webrtc.github.io/samples/src/content/peerconnection/trickle-ice/` Turn sunucunuzun çalışıp çalışmadığını kontrol edin ve aşağıdaki ayrıntıları girin. Turn server URL'sini Turn server URL'niz olarak değiştirin.
 ```sh
 STUN or TURN URI: turn:turn.higheredlab.com:443?transport=tcp
 TURN username:
 TURN password: xxxx
 ```
 
-Execute the code below to generate username and password. Replace `f23xxxea3841c9b91e9accccddde850c61` with the `static-auth-secret` from `/etc/turnserver.conf` file on the turn server.
+Kullanıcı adı ve şifre oluşturmak için aşağıdaki kodu uygulayın. Dönüş sunucusundaki "/ etc / turnserver.conf" dosyasındaki "f23xxxea3841c9b91e9accccddde850c61" 'yi "static-auth-secret" ile değiştirin.
 
 ```sh
 secret=f23xxxea3841c9b91e9accccddde850c61 && \
@@ -383,9 +378,9 @@ username=$(( $time + $expiry )) &&\
 echo username:$username && \
 echo password : $(echo -n $username | openssl dgst -binary -sha1 -hmac $secret | openssl base64)
 ```
-Then click `Add Server` and then `Gather candidates` button. If you have done everything correctly, you should see `Done` as the final result. If you do not get any response or if you see any error messages, please double check if you have diligently followed above steps.
+Ardından 'Add Server' ve ardından 'Gather candidates' butonuna tıklayın. Her şeyi doğru yaptıysanız, nihai sonuç olarak 'Done' yi görmelisiniz. Herhangi bir yanıt alamazsanız veya herhangi bir hata mesajı görürseniz, lütfen yukarıdaki adımları özenle uygulayıp uygulamadığınızı iki kez kontrol edin.
 
-## Change favicon of Greenlight
+## Greenlight'ın favicon'unu değiştir
 ```sh
 cd greenlight
 mkdir cpp
@@ -397,29 +392,27 @@ docker-compose down
 docker-compose up -d
 ```
 
-If you have installed Greenlight along with BigBlueButton (bbb-install.sh with -g flag), follow the steps above to change the favicon. Be careful with space and syntax, while adding the line above to volumes block in docker-compose.yml
+Greenlight'ı BigBlueButton (bbb-install.sh ile -g bayrağıyla) birlikte kurduysanız, favicon'u değiştirmek için yukarıdaki adımları izleyin. Docker-compose.yml içindeki birimleri engellemek için yukarıdaki satırı eklerken boşluk ve sözdizimine dikkat edin
 
-## Change logo and copyright of Recordings
+## Kayıtların logosunu ve telif hakkını değiştirin
 ```sh
 # copy your logo.png to /var/bigbluebutton/playback/presentation/2.0
 # edit defaultCopyright in /var/bigbluebutton/playback/presentation/2.0/playback.js
 ```
-Do you want to see your logo in recording playback? Simply copy your logo to thr playback directory as mentioned above.
+Kayıt oynatma sırasında logonuzu görmek ister misiniz? Logonuzu yukarıda belirtildiği gibi oynatma dizinine kopyalamanız yeterlidir.
 
-Do you want to remove copyright message "Recorded with BigBlueButton"? Edit variable defaultCopyright in playback.js.
-
+"BigBlueButton ile Kaydedildi" telif hakkı mesajını kaldırmak istiyor musunuz? DefaultCopyright değişkenini playback.js'de düzenleyin.
 ## GDPR
 
-### No recording
+### Kayıt özelliği olmasın istiyorsanız
 ```sh
 # edit /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 disableRecordingDefault=true
 breakoutRoomsRecord=false
 ```
-When a room is created in BigBlueButton that allows recordings (i.e., the recording button is visible) BigBlueButton will record the entire session. This is independent of the recording-button actually being pressed or not. A simpler solution is to stop recordings altogether.  
+BigBlueButton'da kayıtlara izin veren bir oda oluşturulduğunda (yani kayıt düğmesi görünür) BigBlueButton tüm oturumu kaydedecektir. Bu, gerçekte basılan kayıt düğmesinden bağımsızdır. Daha basit bir çözüm, kayıtları tamamen durdurmaktır.
  
-### No logs
-
+### Loglar
 * [Log rotation](https://docs.bigbluebutton.org/admin/privacy.html#general-log-rotation)
 * [BigBlueButton logging](https://docs.bigbluebutton.org/admin/privacy.html#bigbluebutton-logging)
 * [Nginx log](https://docs.bigbluebutton.org/admin/privacy.html#nginx)
@@ -427,7 +420,7 @@ When a room is created in BigBlueButton that allows recordings (i.e., the record
 * [Coturn log](https://docs.bigbluebutton.org/admin/privacy.html#coturn)
 * [Scalelite log](https://docs.bigbluebutton.org/admin/privacy.html#scalelite-api-container-logs)
 
-### No Syslog entries
+### Syslog girişi tutulmasın
 ```ssh
 # Edit /usr/lib/systemd/system/bbb-htlm5.service
 StandardOutput=null
@@ -435,65 +428,65 @@ StandardOutput=null
 systemctl daemon-reload
 ```
 
-## Experimental
+## Deneysel
 
-We are still testing optimizations mentioned below. Please ensure these work correctly before deployiong in your production environment.
+Halen aşağıda belirtilen optimizasyonları test ediyoruz. Lütfen üretim ortamınızda dağıtımdan önce bunların doğru çalıştığından emin olun.
 
-### Change processing interval for recordings
+### Kayıtlar için işleme aralığını değiştirin
 
-Normally, the BigBlueButton server begins processing the data recorded in a session soon after the session finishes. However, you can change the timing for processing by stopping recordings process before beginning of classes and restarting it after ending of classes.
+Normalde BigBlueButton sunucusu, oturum bittikten hemen sonra bir oturumda kaydedilen verileri işlemeye başlar. Ancak, sınıfların başlamasından önce kayıt sürecini durdurarak ve sınıflar bittikten sonra yeniden başlatarak işlemin zamanlamasını değiştirebilirsiniz.
 
 ```sh
 crontab -e
 
-# Add the following entries
-# Stop recording at 7 AM during week days
+# Aşağıdaki girişleri ekleyin
+# Hafta içi günlerde saat 7'de kaydı durdur
 0 7 * * 1-5 systemctl stop bbb-rap-process-worker.service bbb-record-core.timer
-# Start recording at 6 PM during week days; bbb-record-core will automatically launch all workers required for processing
+# Hafta içi saat 18: 00'de kayda başlayın; bbb-record-core, işleme için gerekli tüm çalışanları otomatik olarak başlatır
 0 18 * * 1-5 systemctl start bbb-record-core.timer
 ```
 
-You should change the timezone of your BBB server to that of your users for accurate cron job scheduling above. 
+Yukarıda doğru cron işi planlaması için BBB sunucunuzun saat dilimini kullanıcılarınızınkine değiştirmelisiniz.
 
 ```sh
-# Current timezone
+# Mevcut saat dilimi
 timedatectl
 
 # List of available timezone
 timedatectl list-timezones
 
-# Set new timezone by replacing Asia/Kolkata with your timezone
+# Asya / Kalküta'yı kendi saat diliminizle değiştirerek yeni saat dilimi ayarlayın
 timedatectl set-timezone Asia/Kolkata
 ```
 
-### Reboot BBB server
+### BBB sunucusunu yeniden başlatın
 
-Rebooting BBB server every night would take care of any zombie process or memory leaks. 
+BBB sunucusunu her gece yeniden başlatmak, herhangi bir zombi süreci veya bellek sızıntısı ile ilgilenir.
 
-So you can set a cron job to reboot the server, say, at mid night. After rebooting BBB starts automatically. When you execute `bbb-conf --check` and `bbb-conf --status` you get correct results. 
+Böylece, gece yarısı sunucuyu yeniden başlatmak için bir cron işi ayarlayabilirsiniz. Yeniden başlatıldıktan sonra BBB otomatik olarak başlar. `bbb-conf --check` ve `bbb-conf --status`komutlarını çalıştırdığınızda doğru sonuçları alırsınız.
 
-However, try to creare and join a meeting, and that doesn't work. You would have to manually start BBB with `bbb-conf --restart` and then everything works as expected.  
+Ancak, bir toplantı oluşturmaya ve katılmaya çalışın ve bu işe yaramaz. BBB'yi "bbb-conf --restart" ile manuel olarak başlatmanız gerekir ve ardından her şey beklendiği gibi çalışır.  
 
 
 
-## More on BigBlueButton
+## BigBlueButton hakkında daha fazla bilgi
 
-Check-out the following apps to further extend features of BBB.
+BBB'nin özelliklerini daha da genişletmek için aşağıdaki uygulamalara göz atın.
 
-### [bbb-twilio](https://github.com/manishkatyan/bbb-twilio)
+### [bbb-twilio](https://github.com/dogangokce/bbb-twilio)
 
-Integrate Twilio into BigBlueButton so that users can join a meeting with a dial-in number. You can get local numbers for almost all the countries.
+Twilio'yu BigBlueButton'a entegre edin, böylece kullanıcılar bir arama numarasıyla bir toplantıya katılabilir. Hemen hemen tüm ülkeler için yerel numaralar alabilirsiniz.
 
-### [bbb-mp4](https://github.com/manishkatyan/bbb-mp4)
+### [bbb-mp4](https://github.com/dogangokce/bbb-mp4)
 
-With this app, you can convert a BigBlueButton recording into MP4 video and upload to S3. You can covert multiple MP4 videos in parallel or automate the conversion process.
+Bu uygulama ile bir BigBlueButton kaydını MP4 videoya dönüştürebilir ve S3'e yükleyebilirsiniz. Birden çok MP4 videosunu paralel olarak dönüştürebilir veya dönüştürme işlemini otomatikleştirebilirsiniz.
 
 ### [bbb-streaming](https://github.com/manishkatyan/bbb-streaming)
 
-Livestream your BigBlueButton classes on Youtube or Facebook to thousands of your users.
+BigBlueButton sınıflarınızı Youtube veya Facebook'ta binlerce kullanıcınıza canlı yayınlayın.
 
-### [100 Most Googled Questions on BigBlueButton](https://higheredlab.com/bigbluebutton-guide/)
+### [BigBlueButton'da Google'da En Çok Aranan 100 Soru](https://dgnlabs.com/bigbluebutton-guide/)
 
-Everything you need to know about BigBlueButton including pricing, comparison with Zoom, Moodle integrations, scaling, and dozens of troubleshooting.
+Fiyatlandırma, Zoom ile karşılaştırma, Moodle entegrasyonları, ölçeklendirme ve düzinelerce sorun giderme dahil BigBlueButton hakkında bilmeniz gereken her şey.
 
 
