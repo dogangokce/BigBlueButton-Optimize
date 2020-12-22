@@ -1,5 +1,4 @@
 #!/bin/bash
-PUBLIC_IP="80.253.245.226"
 # Pull in the helper functions for configuring BigBlueButton
 source /etc/bigbluebutton/bbb-conf/apply-lib.sh
 
