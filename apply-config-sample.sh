@@ -81,10 +81,10 @@ echo "Enable audio check otherwise may face audio issue"
 sed -i 's/skipCheck:.*/skipCheck: false/g' /usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml
 
 echo "Set Client Title"
-sed -i 's/clientTitle:.*/clientTitle: Class++/g' /usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml
+sed -i 's/clientTitle:.*/clientTitle: Hazar Koleji/g' /usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml
 
 echo "Set App Title"
-sed -i 's/appName:.*/appName: Class++/g' /usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml
+sed -i 's/appName:.*/appName: Hazar Koleji/g' /usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml
 
 echo "Set Copyright"
 sed -i 's/copyright:.*/copyright: "©2020 DGNlabs by Doğan GÖGCE"/g' /usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml
