@@ -2,9 +2,9 @@
 # Pull in the helper functions for configuring BigBlueButton
 source /etc/bigbluebutton/bbb-conf/apply-lib.sh
 
+echo "Firewall Ayarlarını yaptırma"
 enableUFWRules
-enableMultipleKurentos
-echo "  - Setting camera defaults"
+echo "  - Kamera varsayılanlarını ayarlama"
 yq w -i $HTML5_CONFIG 'public.kurento.cameraProfiles.(id==low).bitrate' 50
 yq w -i $HTML5_CONFIG 'public.kurento.cameraProfiles.(id==medium).bitrate' 100
 yq w -i $HTML5_CONFIG 'public.kurento.cameraProfiles.(id==high).bitrate' 150
@@ -15,55 +15,60 @@ yq w -i $HTML5_CONFIG 'public.kurento.cameraProfiles.(id==medium).default' false
 yq w -i $HTML5_CONFIG 'public.kurento.cameraProfiles.(id==high).default' false
 yq w -i $HTML5_CONFIG 'public.kurento.cameraProfiles.(id==hd).default' false
 
-echo "Running three parallel Kurento media server"
+echo "Üç paralel Kurento medya sunucusunu çalıştırma"
 enableMultipleKurentos
 
-echo "Make the HTML5 client default"
+#Üç paralel Kurento medya sunucusunu devredışı bırakmak istenirse
+#echo "Üç paralel Kurento medya sunucusunu çalıştırma"
+#disableMultipleKurentos
+
+
+echo "HTML5 istemcisini varsayılan yapın"
 sed -i 's/attendeesJoinViaHTML5Client=.*/attendeesJoinViaHTML5Client=true/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 sed -i 's/moderatorsJoinViaHTML5Client=.*/moderatorsJoinViaHTML5Client=true/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 
-echo "Set Welcome message"
+echo "Hoş Geldiniz mesajını ayarlayın"
 sed -i 's/defaultWelcomeMessage=.*/defaultWelcomeMessage=Merhaba, <b>\%\%CONFNAME\%\%<\/b>\ Canlı Dersine Hoşgeldiniz!/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 sed -i 's/defaultWelcomeMessageFooter=.*/defaultWelcomeMessageFooter=Daha fazla bilgi hazarkoleji.com /g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 
 #echo "Set dial in number"
 #sed -i 's/defaultDialAccessNumber=.*/defaultDialAccessNumber=+12564725575/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 
-echo "Let Moderators unmute users"
+echo "Moderatörlerin kullanıcıların sesini açmasına izin ver"
 sed -i 's/allowModsToUnmuteUsers=.*/allowModsToUnmuteUsers=true/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 
-echo "See other viewers webcams"
+echo "Diğer görüntüleyenlerin web kameralarını görün"
 sed -i 's/webcamsOnlyForModerator=.*/webcamsOnlyForModerator=true/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 
-echo "Don't Mute the class on start"
+echo "Başlangıçta sınıfı sessize alma"
 sed -i 's/muteOnStart=.*/muteOnStart=false/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 
-echo "Saves meeting events even if the meeting is not recorded"
+echo "Toplantı kaydedilmese bile toplantı olaylarını kaydeder"
 sed -i 's/keepEvents=.*/keepEvents=true/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 
-echo "Set maximum users per class to 100"
+echo "Sınıf başına maksimum kullanıcıyı 100 olarak ayarlayın"
 sed -i 's/defaultMaxUsers=.*/defaultMaxUsers=100/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 
-echo "Disable private chat"
+echo "Özel sohbeti devre dışı bırakın"
 sed -i 's/lockSettingsDisablePrivateChat=.*/lockSettingsDisablePrivateChat=true/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 
-echo "Disable public chat"
+echo "Genel sohbeti devre dışı bırakın"
 sed -i 's/lockSettingsDisablePublicChat=.*/lockSettingsDisablePublicChat=true/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 
-echo "Disable shared note"
+echo "Paylaşılan notu devre dışı bırak"
 sed -i 's/lockSettingsDisableNote=.*/lockSettingsDisableNote=true/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 
 # Enabeling this may create audio issue in 2.2.29
-echo "Enable mic";
+echo "Mikrofonu etkinleştir";
 sed -i 's/lockSettingsDisableMic=.*/lockSettingsDisableMic=false/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 
-echo "See other users in the Users list"
+echo "Kullanıcılar listesinde diğer kullanıcıları görün"
 sed -i 's/lockSettingsHideUserList=.*/lockSettingsHideUserList=true/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 
-echo "Prevent viewers from sharing webcams"
+echo "Görüntüleyenlerin web kameralarını paylaşmasını engelleyin"
 sed -i 's/lockSettingsDisableCam=.*/lockSettingsDisableCam=false/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 
-echo "Prevent users from joining classes from multiple devices"
+echo "Kullanıcıların birden fazla cihazdan sınıflara katılmasını önleyin"
 sed -i 's/allowDuplicateExtUserid=.*/allowDuplicateExtUserid=false/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 
 echo "Belirli bir süre sonra moderatör olmadığında canlı dersi sonlandırın. Öğrencilerin kafasını karıştırmasını engeller."
@@ -72,24 +77,24 @@ sed -i 's/endWhenNoModerator=.*/endWhenNoModerator=true/g' /usr/share/bbb-web/WE
 echo "Maksimum toplantı süresini 120 dakikaya ayarlayın"
 sed -i 's/defaultMeetingDuration=.*/defaultMeetingDuration=120/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 
-echo "No listen only mode"
+echo "Sadece dinleme modu yok"
 sed -i 's/listenOnlyMode:.*/listenOnlyMode: false/g' /usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml
 
-echo "Enable audio check otherwise may face audio issue"
+echo "Ses kontrolünü etkinleştirin, aksi takdirde ses sorunuyla karşılaşabilir"
 sed -i 's/skipCheck:.*/skipCheck: false/g' /usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml
 
-echo "Set Client Title"
+echo "İstemci Başlığını Ayarla"
 sed -i 's/clientTitle:.*/clientTitle: Hazar Koleji/g' /usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml
 
-echo "Set App Title"
+echo "Uygulama Başlığını Ayarla"
 sed -i 's/appName:.*/appName: Hazar Koleji/g' /usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml
 
-echo "Set Copyright"
+echo "Telif Hakkını Ayarla"
 sed -i 's/copyright:.*/copyright: "©2020 DGNlabs by Doğan GÖGCE"/g' /usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml
 
-echo "Set Helplink"
+echo "Yardım Bağlantısını Ayarla"
 sed -i 's/helpLink:.*/helpLink: http:\/\/hazarkoleji.com/g' /usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml
 
-echo "Set Copyright in Playback"
-sed -i "s/defaultCopyright = .*/defaultCopyright = \'<p>uzeportal.com<\/p>\';/g" /var/bigbluebutton/playback/presentation/2.0/playback.js
+echo "Oynatmada Telif Hakkını Ayarlama"
+sed -i "s/defaultCopyright = .*/defaultCopyright = \'<p>hazarkoleji.com<\/p>\';/g" /var/bigbluebutton/playback/presentation/2.0/playback.js
 
