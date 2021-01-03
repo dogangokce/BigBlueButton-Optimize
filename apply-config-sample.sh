@@ -31,7 +31,7 @@ echo "Hoş Geldiniz mesajını ayarlayın"
 sed -i 's/defaultWelcomeMessage=.*/defaultWelcomeMessage=Merhaba, <b>\%\%CONFNAME\%\%<\/b>\ Canlı Dersine Hoşgeldiniz!/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 sed -i 's/defaultWelcomeMessageFooter=.*/defaultWelcomeMessageFooter=Daha fazla bilgi hazarkoleji.com /g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 
-#echo "Set dial in number"
+#echo "Numarayı çevirmeyi ayarla"
 #sed -i 's/defaultDialAccessNumber=.*/defaultDialAccessNumber=+12564725575/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 
 echo "Moderatörlerin kullanıcıların sesini açmasına izin ver"
