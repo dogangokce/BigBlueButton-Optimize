@@ -7,8 +7,8 @@ enableMultipleKurentos
 echo "  - Setting camera defaults"
 yq w -i $HTML5_CONFIG 'public.kurento.cameraProfiles.(id==low).bitrate' 50
 yq w -i $HTML5_CONFIG 'public.kurento.cameraProfiles.(id==medium).bitrate' 100
-yq w -i $HTML5_CONFIG 'public.kurento.cameraProfiles.(id==high).bitrate' 200
-yq w -i $HTML5_CONFIG 'public.kurento.cameraProfiles.(id==hd).bitrate' 300
+yq w -i $HTML5_CONFIG 'public.kurento.cameraProfiles.(id==high).bitrate' 150
+yq w -i $HTML5_CONFIG 'public.kurento.cameraProfiles.(id==hd).bitrate' 200
 
 yq w -i $HTML5_CONFIG 'public.kurento.cameraProfiles.(id==low).default' true
 yq w -i $HTML5_CONFIG 'public.kurento.cameraProfiles.(id==medium).default' false
@@ -23,9 +23,8 @@ sed -i 's/attendeesJoinViaHTML5Client=.*/attendeesJoinViaHTML5Client=true/g' /us
 sed -i 's/moderatorsJoinViaHTML5Client=.*/moderatorsJoinViaHTML5Client=true/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 
 echo "Set Welcome message"
-sed -i 's/defaultWelcomeMessage=.*/defaultWelcomeMessage=Hazar Koleji  <b>%%CONFNAME%%</b>! CANLI DERS/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
-sed -i 's/defaultWelcomeMessageFooter=.*/defaultWelcomeMessageFooter=Daha fazla bilgi <a href="http://hazarkoleji.com" target="_blank"><u>Hazar Koleji</u></a>./g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
-#sed -i 's/defaultWelcomeMessageFooter=.*/defaultWelcomeMessageFooter=To join this meeting by phone, dial:<br>  %%DIALNUM%%<br>Then enter %%CONFNUM%% as the conference PIN number./g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
+sed -i 's/defaultWelcomeMessage=.*/defaultWelcomeMessage=Merhaba, <b>\%\%CONFNAME\%\%<\/b>\ Canlı Dersine Hoşgeldiniz!/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
+sed -i 's/defaultWelcomeMessageFooter=.*/defaultWelcomeMessageFooter=Daha fazla bilgi hazarkoleji.com /g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 
 #echo "Set dial in number"
 #sed -i 's/defaultDialAccessNumber=.*/defaultDialAccessNumber=+12564725575/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
@@ -89,8 +88,8 @@ echo "Set Copyright"
 sed -i 's/copyright:.*/copyright: "©2020 DGNlabs by Doğan GÖGCE"/g' /usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml
 
 echo "Set Helplink"
-sed -i 's/helpLink:.*/helpLink: http:\/\/hazarkoleji.com\/bigbluebutton-guide#using-bigbluebutton/g' /usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml
+sed -i 's/helpLink:.*/helpLink: http:\/\/hazarkoleji.com/g' /usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml
 
 echo "Set Copyright in Playback"
-sed -i "s/defaultCopyright = .*/defaultCopyright = \'<p>hazarkoleji.com<\/p>\';/g" /var/bigbluebutton/playback/presentation/2.0/playback.js
+sed -i "s/defaultCopyright = .*/defaultCopyright = \'<p>uzeportal.com<\/p>\';/g" /var/bigbluebutton/playback/presentation/2.0/playback.js
 
