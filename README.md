@@ -16,7 +16,10 @@ Xml dosyalarını güncellemek için XMLStarlet ve metin dosyalarını güncelle
 sudo apt-get update -y
 sudo apt-get install -y xmlstarlet
 git clone https://github.com/dogangokce/BigBlueButton-Optimize.git
-cd BigBlueButton-Optimize
+Firma1 kurulumunuz için 
+cd BigBlueButton-Optimize/firma1
+Firma2 kurulumunuz için 
+cd BigBlueButton-Optimize/firma2
 cp apply-config-sample.sh apply-config.sh
 chmod 755 replace-config.sh
 
@@ -26,7 +29,7 @@ chmod 755 replace-config.sh
 ./replace-config.sh
 ```
 ...
-## NOT Problem Olursa Kullanın Gitup projenizden indirilen ve /root/BigBlueButton-Optimize diye oluşan klasörü sunucudan silmek içindir
+## NOT Problem Olursa Kullanın Githup projenizden indirilen ve /root/BigBlueButton-Optimize diye oluşan klasörü sunucudan silmek içindir
 ```sh
 rm -r /BigBlueButton-Optimize
 ```
