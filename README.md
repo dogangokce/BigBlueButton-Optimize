@@ -16,19 +16,31 @@ Xml dosyalarını güncellemek için XMLStarlet ve metin dosyalarını güncelle
 sudo apt-get update -y
 sudo apt-get install -y xmlstarlet
 git clone https://github.com/dogangokce/BigBlueButton-Optimize.git
-cd bbb-optimize
+cd BigBlueButton-Optimize
 cp apply-config-sample.sh apply-config.sh
+chmod 755 replace-config.sh
 
 # PUBLIC_IP'yi BBB sunucunuzun genel IP'sine ayarlamak için apply-config.sh dosyasını düzenleyin
 
-# Değişiklikleri uygulayın ve BBB'yi yeniden başlatın
+# Değişiklikleri uygulayın ve BBB'yi yeniden başlatın File Zilla Uygulamasını aç dosyayı 755 izinlere getir
 ./replace-config.sh
 ```
+...
+## NOT Problem Olursa Kullanın Gitup projenizden indirilen ve /root/BigBlueButton-Optimize diye oluşan klasörü sunucudan silmek içindir
+```sh
+rm -r /BigBlueButton-Optimize
+```
+
+ 
 'apply-config.sh' dosyasını uygun şekilde düzenleyin. Her bir özelleştirmeyle ilgili yorumlar, her birinin anlamını anlamanıza yardımcı olacak ve varsayılan değerleri değiştirebileceksiniz.
 ## Markanızla eşleştirin
 ```sh
 cp default.pdf /var/www/bigbluebutton-default/
 cp favicon.ico /var/www/bigbluebutton-default/
+cp default.pptx /var/www/bigbluebutton-default/
+cp index.html /var/www/bigbluebutton-default/
+cp tr_TR.json /usr/share/meteor/bundle/programs/server/assets/app/locales/
+cp logo.png /var/bigbluebutton/playback/presentation/2.0/
 bbb-conf --restart
 ```
 Varsayılan BigBlueButton kurulumunu markanızla eşleşecek şekilde aşağıdaki şekillerde güncelleyebilirsiniz:
