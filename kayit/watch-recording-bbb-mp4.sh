@@ -4,13 +4,13 @@
 
 echo "recordingDir: $recordingDir"
 
-echo "Watching New BBB Meetings"
+echo "Yeni BBB Toplantılarını İzlemek"
 echo `date`
 
 DIRECTORY_TO_OBSERVE="$recordingDir"
-#Directory where bbb-mp4 is installed
+#Kayit özelliğinin kurulu olduğu dizin
 DIRECTORY_BBB_MP4="$BBBMP4Dir"
-#pattern for meeting id
+#toplantı kimliği kalıbı
 MEETING_ID="^[0-9a-f]{40}-[[:digit:]]{13}$"
 
 watch() {
@@ -25,7 +25,7 @@ watch() {
 
 }
 
-# Absolute path to node - execute command "which node" to find out
+# Düğüme giden mutlak yol - bulmak için "hangi düğüm" komutunu çalıştırın
 convert_mp4() {
 
     if [[ $1 =~ $MEETING_ID ]]; 
@@ -37,5 +37,5 @@ convert_mp4() {
 
 }
 
-# This script is called by the supervisor.
+# Bu komut dosyası gözetmen tarafından çağrılır.
 watch
