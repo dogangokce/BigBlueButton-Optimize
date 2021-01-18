@@ -4,12 +4,12 @@
 
 NUM_DAYS=100
 
-#List of recordings that are recorded by BBB but not on S3
+#BBB tarafından kaydedilen ancak S3'te kaydedilmeyen kayıtların listesi
 RECORDED_DIFF_S3_FILE="recordings_recorded_diff_S3.txt"
 :> "$RECORDED_DIFF_S3_FILE"
 
 
-#List of raw recordings by BBB
+#BBBye göre ham kayıtların listesi
 RAW_RECORDING_FILE='raw_recordings_by_BBB.txt'
 #Ensure that the file exists and is empty
 :> "$RAW_RECORDING_FILE"
@@ -19,19 +19,19 @@ RAW_RECRODING_COUNT=$(cat "$RAW_RECORDING_FILE" | wc -l)
 echo "Raw recordings in the last $NUM_DAYS day: $RAW_RECRODING_COUNT"
 
 
-#List of recorded recordings by BBB
+#BBB tarafından kaydedilen kayıtların listesi
 RECORDED_RECORDING_FILE='recorded_recordings_by_BBB.txt'
 #Ensure that the file exists and is empty
 :> "$RECORDED_RECORDING_FILE"
 
 while read raw_meeting; do
 
-  #Get events.xml of raw recording
+  #Events.xml ham kaydı alın
   events_xml="/var/bigbluebutton/recording/raw/$raw_meeting/events.xml"
 
   if [[ -f "$events_xml" ]]; 
   then
-    #Read events.xml and look for RecordStatusEvent as true, which means the meeting was recorded
+    #Events.xml dosyasını okuyun ve RecordStatusEvent'i true olarak arayın, bu da toplantının kaydedildiği anlamına gelir
     result=`xmlstarlet sel -t -v '//recording/event[@eventname="RecordStatusEvent"]/status' "$events_xml"`
     
     if [ -n "$result" ]; 
@@ -46,12 +46,12 @@ RECORDED_RECRODING_COUNT=$(cat "$RECORDED_RECORDING_FILE" | wc -l)
 echo "Recorded recordings in the last $NUM_DAYS day: $RECORDED_RECRODING_COUNT"
 
 
-echo "Ensuring already converted MP4 files are sync with S3"
+echo "Zaten dönüştürülmüş MP4 dosyalarının S3 ile senkronize olmasını sağlama"
 aws s3 sync mp4/ "s3://$S3BucketName"  --acl public-read
 
-#List of recordings that are on AWS S3
+#AWS S3teki kayıtların listesi
 S3_FILE='recordings_on_S3.txt'
-#Ensure that the file exists and is empty
+#Dosyanın var olduğundan ve boş olduğundan emin olun
 :> "$S3_FILE"
 aws s3 ls "s3://$S3BucketName" | awk '{ print $4 }' | cut -f 1 -d '.' | egrep '[a-z0-9\-]{54}' > "$S3_FILE"
 
@@ -78,7 +78,7 @@ if [ "$RECORDED_DIFF_S3_COUNT" -eq 0 ]; then
   rm "$RECORDED_DIFF_S3_FILE"
   exit 1
 else
-  echo "Rebuilding recording. Watch script will convert to MP4 and upload to S3"
+  echo "Kayıt yeniden oluşturuluyor. İzle komut dosyası MP4e dönüştürülecek ve S3'e yüklenecek"
   #parallel -j 2 --timeout 200% --joblog log/parallel_rebuild.log -a "$RECORDED_DIFF_S3_FILE" bbb-record --rebuild &
 fi
 
