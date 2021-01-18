@@ -5,18 +5,18 @@
 MP4_DIR="$copyToPath"
 RECORDING_DIR="$recordingDir"
 
-#Number of days to verify recordings for
+#Kayıtların doğrulanacağı gün sayısı
 NUM_DAYS=15
 
-#Create a file to keep MP4 already processed and stored locally in ./mp4
+#MP4ün halihazırda işlenmiş ve yerel olarak şurada depolanması için bir dosya oluşturun ./mp4
 processedfilename='local-processed-recordings.txt'
 :> "$processedfilename"
 
-#Create a file to keep total recordings available in /var/bigbluebutton/published/presentation/
+#Toplam kayıtları saklamak için bir dosya oluşturun. /var/bigbluebutton/published/presentation/
 unprocessedfilename='bbb-unprocessed-recordings.txt'
 :> "$unprocessedfilename"
 
-#Create a tmp file to record unprocessed recordings
+#İşlenmemiş kayıtları kaydetmek için bir tmp dosyası oluşturun
 unprocessedfilename_temp='bbb-unprocessed-recordings-temp.txt'
 :> "$unprocessedfilename_temp"
 
@@ -26,7 +26,7 @@ echo "Total recordings over 15 days: "
 cat $unprocessedfilename | wc -l
 
 find "$MP4_DIR" -maxdepth 1 -mtime -"$NUM_DAYS" -printf "%f\n" | egrep '[a-z0-9]*-[0-9]*' > $processedfilename
-echo "Already processed MP4: "
+echo "Zaten işlenmiş MP4: "
 cat $processedfilename | wc -l
 
 
@@ -41,7 +41,7 @@ done < $unprocessedfilename
 
 mv "$unprocessedfilename_temp" "$unprocessedfilename"
 
-echo "New recordings yet to be processed into MP4: "
+echo "Henüz MP4'e işlenecek yeni kayıtlar: "
 cat $unprocessedfilename | wc -l
 
 #Delete processing files
