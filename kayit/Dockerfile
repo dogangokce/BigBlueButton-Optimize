@@ -22,4 +22,4 @@ RUN apt-get -y install ffmpeg
 RUN apt -y install xvfb
 RUN git clone https://github.com/manishkatyan/bbb-mp4
 RUN cd bbb-mp4 && npm install --ignore-scripts
-WORKDIR /root/bbb-mp4
+WORKDIR /root/BigblueButon-Optimize/kayit
