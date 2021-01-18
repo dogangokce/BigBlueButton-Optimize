@@ -6,7 +6,7 @@ WORKDIR /root
 # Özel görüntü hakkında ETİKET
 LABEL maintainer="iletisim@dogangokce.com"
 LABEL version="0.1"
-LABEL description="This is custom Docker Image for"
+LABEL description="Bu, için özel Docker Görüntüsüdür"
 
 #Yazılım Deposunu Güncelle
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
