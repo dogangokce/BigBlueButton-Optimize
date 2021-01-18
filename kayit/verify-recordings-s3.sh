@@ -1,23 +1,23 @@
 #!/bin/bash
 
-#Verify which of recordings from unprocessedfilename are not already recorded on S3
+#İşlenmemiş dosya adından hangi kayıtların halihazırda S3'e kaydedilmediğini doğrulayın
 
 . ./.env
 
 RECORDING_DIR="$recordingDir"
 
-#Number of days to verify recordings for
+#İşlenmemiş dosya adından hangi kayıtların halihazırda S3'e kaydedilmediğini doğrulayın
 NUM_DAYS=30
 
-#Create a file to keep total recordings available in /var/bigbluebutton/published/presentation/
+#Toplam kayıtları saklamak için bir dosya oluşturun. /var/bigbluebutton/published/presentation/
 unprocessedfilename='bbb-unprocessed-recordings.txt'
 :> "$unprocessedfilename"
 
-#Create a file to keep MP4 already processed and uploaded on AWS S3
+#MP4'ün halihazırda işlenip AWS S3e yüklenmesini sağlamak için bir dosya oluşturun
 processedfilename='s3-processed-recordings.txt'
 :> "$processedfilename"
 
-#Create a tmp file to record unprocessed recordings
+#İşlenmemiş kayıtları kaydetmek için bir tmp dosyası oluşturun
 unprocessedfilename_temp='bbb-unprocessed-recordings-temp.txt'
 :> "$unprocessedfilename_temp"
 
@@ -25,11 +25,11 @@ find "$RECORDING_DIR" -maxdepth 1 -mtime -"$NUM_DAYS" -printf "%f\n" | egrep '[a
 echo "Total recordings over $NUM_DAYS days: "
 cat $unprocessedfilename | wc -l
 
-echo "Ensuring already converted MP4 files are sync with S3"
+echo "Zaten dönüştürülmüş MP4 dosyalarının S3 ile senkronize olmasını sağlama"
 aws s3 sync mp4/ "s3://$S3BucketName"  --acl public-read
 
 aws s3 ls "s3://$S3BucketName" | awk '{ print $4 }' | cut -f 1 -d '.' | egrep '[a-z0-9\-]{54}' > $processedfilename
-echo "Already processed MP4: "
+echo "Zaten işlenmiş MP4: "
 cat $processedfilename | wc -l
 
 while read unprocessed_recording; do
@@ -43,9 +43,9 @@ done < $unprocessedfilename
 
 mv "$unprocessedfilename_temp" "$unprocessedfilename"
 
-echo "New recordings yet to be processed into MP4: "
+echo "Henüz MP4'e işlenecek yeni kayıtlar: "
 cat $unprocessedfilename | wc -l
 
-#Delete processing files
+#İşleme dosyalarını sil
 rm "$processedfilename"
 rm "$unprocessedfilename"
