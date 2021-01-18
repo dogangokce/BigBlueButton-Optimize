@@ -1,14 +1,14 @@
-#Download base image debian
+#Temel görüntü debian'ı indirin
 FROM  node
 
-# Create app directory
+# Uygulama dizini oluşturun
 WORKDIR /root
-# LABEL about the custom image
-LABEL maintainer="arbi20.arakelian@gmail.com"
+# Özel görüntü hakkında ETİKET
+LABEL maintainer="iletisim@dogangokce.com"
 LABEL version="0.1"
 LABEL description="This is custom Docker Image for"
 
-#Update Software Repository
+#Yazılım Deposunu Güncelle
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 #RUN apt-get -y curl
 RUN curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add
