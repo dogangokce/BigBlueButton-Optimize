@@ -1,5 +1,5 @@
 {
-  "name": "bbb-mp4",
+  "name": "BigBlueButton-Optimize",
   "version": "0.9.0",
   "description": "Capture BBB recording as MP4 and upload to AWS S3",
   "scripts": {
