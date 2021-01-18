@@ -74,7 +74,7 @@ async function main() {
 	
 	console.log("Fetching: " + url);
 
-	//Chrome downloads video in webm format. So first download in webm format and then convert into MP4 using ffmpeg
+	//Chrome, videoyu webm biçiminde indirir. Bu yüzden önce webm formatında indirin ve ardından ffmpeg kullanarak MP4'e dönüştürün
     var exportname = meetingId + '.webm';
 
     var duration = 0;
@@ -93,36 +93,36 @@ async function main() {
 
     await page._client.send('Emulation.clearDeviceMetricsOverride')
 
-    //Set the download location of webm recordings. This is useful when you execute this script as background to record multiple recordings using parallel
+    //Webm kayıtlarının indirme konumunu ayarlayın. Paralel kullanarak birden çok kaydı kaydetmek için bu komut dosyasını arka plan olarak çalıştırdığınızda bu yararlıdır.
 	await page._client.send('Page.setDownloadBehavior', {behavior: 'allow', downloadPath: copyFromPath + meetingId})
 
-    // Catch URL unreachable error
+    // Ulaşılamayan URL hatası
     await page.goto(url, {waitUntil: 'networkidle2'}).catch(e => {
         console.error('Recording URL unreachable!');
         process.exit(2);
     })
     await page.setBypassCSP(true)
 
-    // Check if recording exists (search "Recording not found" message)
+    // Kaydın olup olmadığını kontrol edin ("Kayıt bulunamadı" mesajını arayın)
     /*var loadMsg = await page.evaluate(() => {
         return document.getElementById("load-msg").textContent;
     });
-    if(loadMsg == "Recording not found"){
+    if(loadMsg == "Kayıt bulunamadı"){
         console.warn("Recording not found!");
         process.exit(1);
     }
 
-    // Get recording duration
+    // Kayıt süresini alın
     var recDuration = await page.evaluate(() => {
         return document.getElementById("video").duration;
     });
-    // If duration was set to 0 or is greater than recDuration, use recDuration value
+    // Süre 0 olarak ayarlanmışsa veya yinelemeden büyükse yineleme değerini kullanın
     if(duration == 0 || duration > recDuration){
         duration = recDuration;
     }*/
 
     var duration = await page.evaluate(() => {
-        //check for video tag in url_playback_1
+        //url_playback_1 içindeki video etiketini kontrol edin
 	if(document.getElementById("vjs_video_3_html5_api") === null) {
 	    return 0;
 	}
@@ -155,7 +155,7 @@ async function main() {
         window.postMessage({type: 'REC_START'}, '*')
     })
 
-    // Perform any actions that have to be captured in the exported video
+    // Dışa aktarılan videoda yakalanması gereken tüm işlemleri gerçekleştirin
     await page.waitFor((duration * 1000))
 
     await page.evaluate(filename=>{
@@ -164,7 +164,7 @@ async function main() {
     }, exportname)
 
 
-    // Wait for download of webm to complete
+    // Webm'nin indirilmesinin tamamlanmasını bekleyin
     await page.waitForSelector('html.downloadComplete', {timeout: 0})
 
     convertAndCopy(exportname)
