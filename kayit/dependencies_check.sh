@@ -54,7 +54,7 @@ neededCount=${#neededPackages[@]}
 
 if [[ $neededCount -gt 0 ]]; then
   echo "-----------------------------------------------------"
-  echo "Run the following to get all of the required packages"
+  echo "Gerekli tüm paketleri almak için aşağıdakileri çalıştırın"
   echo "-----------------------------------------------------"
   echo "sudo apt install \\"
   for i in "${neededPackages[@]}"; do
