@@ -18,7 +18,7 @@ watch() {
   inotifywait -m -r -e create -e moved_to $DIRECTORY_TO_OBSERVE | while read path action file;do
 
 
-    echo "Change detected date $(date) in ${path} action ${action} in file ${file}"
+    echo "$(file) dosyasındaki $(path) eylem $(action) içinde tespit edilen tarihi $(date) değiştir"
     convert_mp4 "${file}"
 
   done
@@ -32,7 +32,7 @@ convert_mp4() {
     then    
       cd $DIRECTORY_BBB_MP4 && nohup /usr/bin/node bbb-mp4.js $1 > "log/$1.log" 2>&1 &
     else 
-      echo "Not a meeting: $1"
+      echo "Toplantı değil: $1"
     fi
 
 }
