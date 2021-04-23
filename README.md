@@ -30,6 +30,8 @@ chmod +x ./replace-config.sh
 chmod +x ./kur.sh
 ./replace-config.sh
 ./kur.sh
+cd /..
+bbb-conf --restart
 
 ```
 ...
