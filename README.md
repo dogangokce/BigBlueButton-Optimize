@@ -591,7 +591,7 @@ timedatectl
 timedatectl list-timezones
 
 # Asya / Kalküta'yı kendi saat diliminizle değiştirerek yeni saat dilimi ayarlayın
-timedatectl set-timezone Asia/Kolkata
+timedatectl set-timezone Europe/Istanbul
 ```
 
 ### BBB sunucusunu yeniden başlatın
