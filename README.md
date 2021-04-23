@@ -26,7 +26,11 @@ chmod 755 replace-config.sh
 # PUBLIC_IP'yi BBB sunucunuzun genel IP'sine ayarlamak için apply-config.sh dosyasını düzenleyin
 
 # Değişiklikleri uygulayın ve BBB'yi yeniden başlatın File Zilla Uygulamasını aç dosyayı 755 izinlere getir
+chmod +x ./replace-config.sh
+chmod +x ./kur.sh
 ./replace-config.sh
+./kur.sh
+
 ```
 ...
 ## NOT Problem Olursa Kullanın Gitup projenizden indirilen ve /root/BigBlueButton-Optimize diye oluşan klasörü sunucudan silmek içindir
