@@ -50,3 +50,17 @@ sed -i 's/defaultWelcomeMessageFooter=.*/defaultWelcomeMessageFooter=Daha fazla 
 echo "HTML5 istemcisini varsayılan yapın"
 sed -i 's/attendeesJoinViaHTML5Client=.*/attendeesJoinViaHTML5Client=true/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
 sed -i 's/moderatorsJoinViaHTML5Client=.*/moderatorsJoinViaHTML5Client=true/g' /usr/share/bbb-web/WEB-INF/classes/bigbluebutton.properties
+echo "Sadece Dinle Modu"
+sed -i 's/listenOnlyMode:.*/listenOnlyMode: false/g' /usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml
+echo "Yalnızca Dinlemeye zorla"
+sed -i 's/forceListenOnly:.*/forceListenOnly: false/g' /usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml
+echo "Ses kontrolünü atlamayı devreye al"
+sed -i 's/skipCheck:.*/skipCheck: true/g' /usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml
+echo "Ağ Bilgilerini etkinleştirin"
+sed -i 's/enableNetworkInformation:.*/enableNetworkInformation: true/g' /usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml
+echo "Ağ İzlemeyi etkinleştirin"
+sed -i 's/enableNetworkMonitoring:.*/enableNetworkMonitoring: true/g' /usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml
+echo "Otomatik Web kamerasını paylaş"
+sed -i 's/autoShareWebcam:.*/autoShareWebcam: true/g' /usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml
+echo "Video Önizlemesini Atla"
+sed -i 's/skipVideoPreview:.*/skipVideoPreview: true/g' /usr/share/meteor/bundle/programs/server/assets/app/config/settings.yml
