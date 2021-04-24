@@ -129,5 +129,5 @@ cp conf-conference_is_in_qna_mode.wav /etc/bigbluebutton/bbb-conf/
 cp conf-conference_will_start_shortly.wav /etc/bigbluebutton/bbb-conf/
 cp conf-enter_conf_number.wav /etc/bigbluebutton/bbb-conf/
 
-echo "bbb yeniden başlatılıyor"
+echo "Sesler ve özelleştirme dosyalarını sunucuda /etc/bigbluebutton/bbb-conf/ adresine aldık ki bundan sonraki tüm güncellemelerde kendiliğinden işlem yapsın şimdi ise bbb yeniden başlayacak"
 bbb-conf --restart
