@@ -1,8 +1,3 @@
-git clone https://github.com/dogangokce/BigBlueButton-Optimize.git
-cd BigBlueButton-Optimize/firma2
-cp apply-config-sample.sh apply-config.sh
-chmod 755 replace-config.sh
-./replace-config.sh
 cp default.pdf /var/www/bigbluebutton-default/
 cp favicon.ico /var/www/bigbluebutton-default/
 cp default.pptx /var/www/bigbluebutton-default/
