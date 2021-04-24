@@ -191,5 +191,3 @@ cp conf-conference_is_in_qna_mode.wav /opt/freeswitch/share/freeswitch/sounds/en
 cp conf-conference_will_start_shortly.wav /opt/freeswitch/share/freeswitch/sounds/en/us/callie/conference/8000/
 cp conf-enter_conf_number.wav /opt/freeswitch/share/freeswitch/sounds/en/us/callie/conference/8000/
 bbb-conf --restart
-
-
