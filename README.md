@@ -35,7 +35,7 @@ bbb-conf --restart
 
 ```
 ...
-## NOT Problem Olursa Kullanın Gitup projenizden indirilen ve /root/BigBlueButton-Optimize diye oluşan klasörü sunucudan silmek içindir
+## NOT Problem Olursa Kullanın Githup projenizden indirilen ve /root/BigBlueButton-Optimize diye oluşan klasörü sunucudan silmek içindir
 ```sh
 rm -r /BigBlueButton-Optimize
 ```
